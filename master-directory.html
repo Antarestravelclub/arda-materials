@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operon Empire — Master Project Directory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%);
+            color: white;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header .tagline {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        /* Controls Section */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #7c3aed;
+            background: white;
+            color: #7c3aed;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .filter-btn.active {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #7c3aed;
+        }
+
+        /* Category Sections */
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #7c3aed;
+        }
+
+        .category-header h2 {
+            color: #7c3aed;
+            font-size: 1.5rem;
+        }
+
+        .category-icon {
+            font-size: 1.3rem;
+        }
+
+        /* Project Cards Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        /* Project Card */
+        .project-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid #7c3aed;
+        }
+
+        .project-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .project-card.live {
+            border-left-color: #22c55e;
+        }
+
+        .project-card.deployed {
+            border-left-color: #3b82f6;
+        }
+
+        .project-card.tool {
+            border-left-color: #8b5cf6;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .project-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-badge.live {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.deployed {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-badge.tool {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .monthly-fee {
+            color: #7c3aed;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .project-description {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            min-height: 40px;
+        }
+
+        .links-section {
+            margin-top: 15px;
+        }
+
+        .main-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: #7c3aed;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .link-btn:hover {
+            background: #6d28d9;
+            transform: translateY(-1px);
+        }
+
+        .link-btn.secondary {
+            background: #64748b;
+        }
+
+        .link-btn.secondary:hover {
+            background: #475569;
+        }
+
+        .sub-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .sub-link {
+            padding: 6px 12px;
+            background: #f1f5f9;
+            color: #475569;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .sub-link:hover {
+            background: #e2e8f0;
+            color: #7c3aed;
+        }
+
+        /* No Results */
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #64748b;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-buttons {
+                justify-content: center;
+            }
+
+            .search-box {
+                max-width: 100%;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-header {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Operon Empire — Master Project Directory</h1>
+            <p class="tagline">15 projects | 26+ GitHub repos | Powered by Operon</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls">
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="live">Live Revenue</button>
+                <button class="filter-btn" data-filter="deployed">Deployed</button>
+                <button class="filter-btn" data-filter="tools">Tools & Materials</button>
+            </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Search projects...">
+            </div>
+        </div>
+
+        <!-- Live Revenue Products -->
+        <div class="category-section" data-category="live">
+            <div class="category-header">
+                <span class="category-icon">🟢</span>
+                <h2>LIVE REVENUE PRODUCTS</h2>
+            </div>
+            <div class="projects-grid" id="liveProjects">
+                <!-- Projects will be inserted by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Deployed Projects -->
+        <div class="category-section" data-category="deployed">
+            <div class="category-header">
+                <span class="category-icon">🔵</span>
+                <h2>DEPLOYED PROJECTS (Lovable)</h2>
+            </div>
+            <div class="projects-grid" id="deployedProjects">
+                <!-- Projects will be inserted by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Tools & Materials -->
+        <div class="category-section" data-category="tools">
+            <div class="category-header">
+                <span class="category-icon">🟣</span>
+                <h2>TOOLS & SALES MATERIALS (Operon/ARDA)</h2>
+            </div>
+            <div class="projects-grid" id="toolsProjects">
+                <!-- Projects will be inserted by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2024 Operon Empire | Built with Operon Technology</p>
+        </div>
+    </div>
+
+    <script>
+        // Project Data
+        const projects = [
+            // Live Revenue Products
+            {
+                id: 1,
+                name: "Operon AI",
+                category: "live",
+                status: "Live ✅",
+                monthlyFee: "$39/rep/mo",
+                description: "AI-powered platform for reps to manage their business and revenue.",
+                links: {
+                    main: [
+                        { label: "🌐 Live Site", url: "https://myoperon.io" },
+                        { label: "💻 GitHub", url: "https://github.com/Antarestravelclub/Operon" }
+                    ],
+                    sub: [
+                        { label: "Rep Onboarding", url: "https://myoperon.io/rep/onboarding" },
+                        { label: "Sale Intake", url: "https://myoperon.io/rep/intake" },
+                        { label: "Rep Dashboard", url: "https://myoperon.io/rep/dashboard" }
+                    ]
+                }
+            },
+            {
+                id: 2,
+                name: "Solace Wellness",
+                category: "live",
+                status: "Live ✅",
+                monthlyFee: "$9.99-$49.99/mo",
+                description: "Wellness platform with coaching, videos, and personalized journeys.",
+                links: {
+                    main: [
+                        { label: "🌐 Live Site", url: "https://solace-wellness.io" },
+                        { label: "💻 GitHub", url: "https://github.com/Antarestravelclub/instant-coach-glow" }
+                    ],
+                    sub: [
+                        { label: "Admin", url: "https://solace-wellness.io/admin" },
+                        { label: "Video Library", url: "https://solace-wellness.io/video-library" },
+                        { label: "Journeys", url: "https://solace-wellness.io/journeys" },
+                        { label: "Library", url: "https://solace-wellness.io/library" }
+                    ]
+                }
+            },
+            {
+                id: 3,
+                name: "APEX Index",
+                category: "live",
+                status: "Live ✅",
+                monthlyFee: "$799/mo",
+                description: "High-end index tracking platform for serious investors.",
+                links: {
+                    main: [
+                        { label: "🌐 Live Site", url: "https://apex-index.com" },
+                        { label: "💻 GitHub", url: "https://github.com/Antarestravelclub/apexindex" }
+                    ],
+                    sub: []
+                }
+            },
+            {
+                id: 4,
+                name: "Vida Rep Academy",
+                category: "live",
+                status: "Live ✅",
+                monthlyFee: "$499/mo",
+                description: "Training and development platform for sales reps.",
+                links: {
+                    main: [
+                        { label: "🌐 Live Site", url: "https://vida-rep-academy-9d6cda93.vercel.app" },
+                        { label: "💻 GitHub", url: "https://github.com/Antarestravelclub/vida-rep-academy-9d6cda93" }
+                    ],
+                    sub: []
+                }
+            },
+            {
+                id: 5,
+                name: "Secure Check-In (Member Update)",
+                category: "live",
+                status: "Live ✅",
+                monthlyFee: "$99/mo",
+                description: "Member check-in and update platform with rep signup.",
+                links: {
+                    main: [
+                        { label: "🌐 Live Site", url: "https://secure-checkin-confirm.vercel.app" },
+                        { label: "💻 GitHub", url: "https://github.com/Antarestravelclub/secure-checkin-confirm" }
+                    ],
+                    sub: [
+                        { label: "Rep Signup", url: "https://secure-checkin-confirm.vercel.app/rep/signup" }
+                    ]
+                }
+            },
+            // Deployed Projects
+            {
+                id: 6,
+                name: "Vacation Future Finder",
+                category: "deployed",
+                status: "Deployed",
+                description: "Find your perfect vacation destination with advanced filters.",
+                links: {
+                    main: [
+                        { label: "🌐 Live Site", url: "https://vacation-future-finder.vercel.app" },
+                        { label: "💻 GitHub", url: "https://github.com/Antarestravelclub/vacation-future-finder" }
+                    ],
+                    sub: []
+                }
+            },
+            {
+                id: 7,
+                name: "Travelwise Savings Portal",
+                category: "deployed",
+                status: "Deployed",
+                description: "Calculate and optimize your travel savings with this portal.",
+                links: {
+                    main: [
+                        { label: "🌐 Live Site", url: "https://travelwise-savings-portal.vercel.app" },
+                        { label: "💻 GitHub", url: "https://github.com/Antarestravelclub/travelwise-savings-portal" }
+                    ],
+                    sub: []
+                }
+            },
+            {
+                id: 8,
+                name: "Client Sales Matchmaker Pro",
+                category: "deployed",
+                status: "Deployed",
+                description: "Match clients with the perfect sales rep or product.",
+                links: {
+                    main: [
+                        { label: "🌐 Live Site", url: "https://client-sales-matchmaker-pro.vercel.app" },
+                        { label: "💻 GitHub", url: "https://github.com/Antarestravelclub/client-sales-matchmaker-pro" }
+                    ],
+                    sub: []
+                }
+            },
+            {
+                id: 9,
+                name: "Your Project Booster",
+                category: "deployed",
+                status: "Deployed",
+                description: "Tools to help you boost your project's performance.",
+                links: {
+                    main: [
+                        { label: "🌐 Live Site", url: "https://your-project-booster.vercel.app" },
+                        { label: "💻 GitHub", url: "https://github.com/Antarestravelclub/your-project-booster" }
+                    ],
+                    sub: []
+                }
+            },
+            {
+                id: 10,
+                name: "Antares Sales Commission Calculator",
+                category: "deployed",
+                status: "Deployed",
+                description: "Calculate sales commissions for Antares Travel Club.",
+                links: {
+                    main: [
+                        { label: "🌐 Live Site", url: "https://antares-travel-club-sales-commissio.vercel.app" },
+                        { label: "💻 GitHub", url: "https://github.com/Antarestravelclub/antares-travel-club-sales-commission-calc" }
+                    ],
+                    sub: []
+                }
+            },
+            {
+                id: 11,
+                name: "Gememi",
+                category: "deployed",
+                status: "Deployed",
+                description: "A deployed project for Antarestravelclub.",
+                links: {
+                    main: [
+                        { label: "🌐 Live Site", url: "https://gememi.vercel.app" },
+                        { label: "💻 GitHub", url: "https://github.com/Antarestravelclub/gememi" }
+                    ],
+                    sub: []
+                }
+            },
+            {
+                id: 12,
+                name: "Empathic Voice Interface",
+                category: "deployed",
+                status: "Deployed",
+                description: "Voice interface starter with empathic capabilities.",
+                links: {
+                    main: [
+                        { label: "🌐 Live Site", url: "https://empathic-voice-interface-starter-six-xi.vercel.app" },
+                        { label: "💻 GitHub", url: "https://github.com/Antarestravelclub/empathic-voice-interface-starter" }
+                    ],
+                    sub: []
+                }
+            },
+            // Tools & Materials
+            {
+                id: 13,
+                name: "ARDA/Sales Materials Hub",
+                category: "tools",
+                status: "Tool",
+                description: "Central hub for all ARDA and sales materials.",
+                links: {
+                    main: [
+                        { label: "🌐 Hub", url: "https://arda-materials.vercel.app" }
+                    ],
+                    sub: [
+                        { label: "Pitch Deck (Generic)", url: "https://arda-materials.vercel.app/fimartech-pitch-deck.html" },
+                        { label: "Pitch Deck (ARDA)", url: "https://arda-materials.vercel.app/arda-pitch-deck.html" },
+                        { label: "One-Pager", url: "https://arda-materials.vercel.app/one-pager.docx.html" },
+                        { label: "Demo Script", url: "https://arda-materials.vercel.app/demo-script.docx.html" },
+                        { label: "Training Manual", url: "https://arda-materials.vercel.app/pitchman-training-manual.docx.html" },
+                        { label: "Knowledge Quiz", url: "https://arda-materials.vercel.app/knowledge-test.html" },
+                        { label: "Sign-Up Contract", url: "https://arda-materials.vercel.app/signup-contract.html" },
+                        { label: "Vida Follow-Up Workflow", url: "https://arda-materials.vercel.app/vida-followup-workflow.html" },
+                        { label: "Revenue Tracker", url: "https://arda-materials.vercel.app/operon-revenue-tracker.html" },
+                        { label: "Sage Green Mockup (Solace)", url: "https://solace-wellness-five.vercel.app" }
+                    ]
+                }
+            }
+        ];
+
+        // Render Projects
+        function renderProjects(filter = 'all', search = '') {
+            const containers = {
+                live: document.getElementById('liveProjects'),
+                deployed: document.getElementById('deployedProjects'),
+                tools: document.getElementById('toolsProjects')
+            };
+
+            // Clear all containers
+            Object.values(containers).forEach(c => c.innerHTML = '');
+
+            projects.forEach(project => {
+                // Apply filters
+                if (filter !== 'all' && project.category !== filter) return;
+                if (search && !project.name.toLowerCase().includes(search.toLowerCase())) return;
+
+                const card = createProjectCard(project);
+                containers[project.category].appendChild(card);
+            });
+
+            // Hide empty sections when filtering
+            document.querySelectorAll('.category-section').forEach(section => {
+                const category = section.dataset.category;
+                const container = section.querySelector('.projects-grid');
+                section.style.display = (filter === 'all' || filter === category) ? 'block' : 'none';
+            });
+        }
+
+        function createProjectCard(project) {
+            const card = document.createElement('div');
+            card.className = `project-card ${project.category}`;
+            card.dataset.id = project.id;
+
+            let linksHTML = '';
+            if (project.links.main.length) {
+                linksHTML += '<div class="main-links">';
+                project.links.main.forEach(link => {
+                    linksHTML += `<a href="${link.url}" class="link-btn" target="_blank">${link.label}</a>`;
+                });
+                linksHTML += '</div>';
+            }
+
+            if (project.links.sub.length) {
+                linksHTML += '<div class="sub-links">';
+                project.links.sub.forEach(link => {
+                    linksHTML += `<a href="${link.url}" class="sub-link" target="_blank">${link.label}</a>`;
+                });
+                linksHTML += '</div>';
+            }
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="project-name">${project.name}</div>
+                    <span class="status-badge ${project.category}">${project.status}</span>
+                </div>
+                ${project.monthlyFee ? `<div class="monthly-fee">Monthly Fee: ${project.monthlyFee}</div>` : ''}
+                <div class="project-description">${project.description}</div>
+                <div class="links-section">
+                    ${linksHTML}
+                </div>
+            `;
+
+            return card;
+        }
+
+        // Event Listeners
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                renderProjects(this.dataset.filter, document.getElementById('searchInput').value);
+            });
+        });
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+            renderProjects(activeFilter, this.value);
+        });
+
+        // Initial render
+        renderProjects();
+    </script>
+</body>
+</html>

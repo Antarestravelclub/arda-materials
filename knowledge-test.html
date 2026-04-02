@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operon — Sales Knowledge Test</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f1729; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  .container { max-width: 680px; width: 100%; }
+  h1 { text-align: center; color: #d4af37; font-size: 1.6rem; margin-bottom: 6px; letter-spacing: 1px; }
+  .subtitle { text-align: center; color: #aaa; font-size: 0.9rem; margin-bottom: 24px; }
+  .progress-bar-wrap { background: #1e2d50; border-radius: 10px; height: 8px; margin-bottom: 10px; }
+  .progress-bar { background: #d4af37; height: 8px; border-radius: 10px; transition: width 0.4s; }
+  .meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: #aaa; margin-bottom: 20px; }
+  .score { color: #d4af37; font-weight: bold; }
+  .question-box { background: #1a2540; border-radius: 16px; padding: 28px; margin-bottom: 20px; border: 1px solid #2a3a60; }
+  .question-text { font-size: 1.15rem; line-height: 1.6; margin-bottom: 24px; color: #f0f0f0; }
+  .answers { display: flex; flex-direction: column; gap: 12px; }
+  .answer-btn { background: #0f1f3d; border: 2px solid #2a3a60; color: #fff; padding: 14px 18px; border-radius: 10px; font-size: 1rem; text-align: left; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 12px; }
+  .answer-btn:hover:not(:disabled) { border-color: #d4af37; background: #1a2f50; }
+  .answer-btn .letter { background: #2a3a60; color: #d4af37; border-radius: 6px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+  .answer-btn.correct { background: #0d3320; border-color: #2ecc71; color: #2ecc71; }
+  .answer-btn.correct .letter { background: #2ecc71; color: #fff; }
+  .answer-btn.wrong { background: #3a0d0d; border-color: #e74c3c; color: #e74c3c; }
+  .answer-btn.wrong .letter { background: #e74c3c; color: #fff; }
+  .answer-btn:disabled { cursor: not-allowed; }
+  .feedback { margin-top: 16px; padding: 14px 18px; border-radius: 10px; font-size: 0.95rem; line-height: 1.5; }
+  .feedback.correct { background: #0d3320; border: 1px solid #2ecc71; color: #2ecc71; }
+  .feedback.wrong { background: #3a0d0d; border: 1px solid #e74c3c; color: #f0a0a0; }
+  .next-btn { display: none; width: 100%; padding: 16px; background: #d4af37; color: #0f1729; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; margin-top: 16px; }
+  .next-btn:hover { background: #f0c84a; }
+  /* Results */
+  .results { background: #1a2540; border-radius: 16px; padding: 36px; text-align: center; border: 1px solid #2a3a60; }
+  .results h2 { color: #d4af37; font-size: 2rem; margin-bottom: 10px; }
+  .grade { font-size: 5rem; font-weight: bold; margin: 20px 0; }
+  .grade.A { color: #2ecc71; }
+  .grade.B { color: #f39c12; }
+  .grade.C { color: #e67e22; }
+  .grade.F { color: #e74c3c; }
+  .result-score { font-size: 1.4rem; color: #aaa; margin-bottom: 16px; }
+  .result-msg { font-size: 1.1rem; color: #d4af37; margin-bottom: 28px; line-height: 1.6; }
+  .retake-btn { padding: 16px 40px; background: #d4af37; color: #0f1729; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+  .retake-btn:hover { background: #f0c84a; }
+  #start-screen { text-align: center; }
+  #start-screen .start-btn { padding: 18px 50px; background: #d4af37; color: #0f1729; border: none; border-radius: 12px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
+  #start-screen .start-btn:hover { background: #f0c84a; }
+  .intro-box { background: #1a2540; border-radius: 16px; padding: 28px; margin-bottom: 24px; border: 1px solid #2a3a60; text-align: left; }
+  .intro-box ul { list-style: none; padding: 0; }
+  .intro-box ul li { padding: 8px 0; border-bottom: 1px solid #2a3a60; color: #ccc; font-size: 0.95rem; }
+  .intro-box ul li:last-child { border: none; }
+  .intro-box ul li span { color: #d4af37; font-weight: bold; margin-right: 8px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🏆 Operon</h1>
+  <p class="subtitle">Sales Knowledge Test — ARDA 2026</p>
+
+  <!-- Start Screen -->
+  <div id="start-screen">
+    <div class="intro-box">
+      <ul>
+        <li><span>📋</span>30 multiple choice questions</li>
+        <li><span>🎯</span>Covers products, pricing, objections & closing</li>
+        <li><span>✅</span>Instant feedback on every answer</li>
+        <li><span>🏆</span>Score 27+ to be ARDA Ready!</li>
+      </ul>
+    </div>
+    <button class="start-btn" onclick="startQuiz()">Start Test →</button>
+  </div>
+
+  <!-- Quiz Screen -->
+  <div id="quiz-screen" style="display:none;">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="meta">
+      <span id="question-counter">Question 1 of 30</span>
+      <span class="score" id="score-display">Score: 0/0</span>
+    </div>
+    <div class="question-box">
+      <div class="question-text" id="question-text"></div>
+      <div class="answers" id="answers"></div>
+      <div class="feedback" id="feedback" style="display:none;"></div>
+    </div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question →</button>
+  </div>
+
+  <!-- Results Screen -->
+  <div id="results-screen" style="display:none;">
+    <div class="results">
+      <h2>Test Complete!</h2>
+      <div class="grade" id="grade-letter"></div>
+      <div class="result-score" id="result-score"></div>
+      <div class="result-msg" id="result-msg"></div>
+      <button class="retake-btn" onclick="retakeQuiz()">🔄 Retake Test</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  { q: "What does APEX Index do?", answers: ["Manages payroll", "Assesses sales talent before hiring", "Books appointments", "Trains new reps"], correct: 1, explanation: "APEX Index is an AI-powered sales talent assessment tool built specifically for vacation ownership." },
+  { q: "What is the APEX Index tagline?", answers: ["\"Hire Fast, Hire Right\"", "\"Stop guessing. Start knowing.\"", "\"Train smarter, close more\"", "\"AI for everyone\""], correct: 1, explanation: "\"Stop guessing. Start knowing.\" — APEX takes the guesswork out of hiring." },
+  { q: "What website is APEX Index live at?", answers: ["myapex.com", "apexsales.com", "apex-index.com", "apexindex.io"], correct: 2, explanation: "Direct prospects to apex-index.com for a live demo." },
+  { q: "What does Vida Rep Academy offer?", answers: ["A CRM system", "A 30-day digital training program for new reps", "Lead generation", "Email automation"], correct: 1, explanation: "Vida Rep Academy is a structured 30-day digital training program covering the full sales process." },
+  { q: "How many days is the Vida Rep Academy program?", answers: ["7 days", "14 days", "30 days", "90 days"], correct: 2, explanation: "30 days — structured day-by-day with tour process, sales process, and objection handling." },
+  { q: "What is Operon AI?", answers: ["A hiring tool", "A training platform", "An AI-powered sales assistant that follows up leads", "A payroll system"], correct: 2, explanation: "Operon AI automatically follows up every lead, sends personalized emails, and books appointments 24/7." },
+  { q: "What website is Operon AI live at?", answers: ["operon.com", "myoperon.io", "operonai.com", "getoperon.com"], correct: 1, explanation: "Live demos at myoperon.io — show prospects the dashboard!" },
+  { q: "Who founded Operon?", answers: ["John Smith", "Elon Musk", "Mark Piff", "Jeff Bezos"], correct: 2, explanation: "Operon was founded by Mark Piff — 30+ years in the vacation ownership industry." },
+  { q: "How many years of vacation ownership experience does Mark Piff have?", answers: ["10 years", "20 years", "30+ years", "5 years"], correct: 2, explanation: "30+ years — Mark knows this industry inside out. That's Operon's biggest advantage." },
+  { q: "Where is Operon based?", answers: ["Las Vegas", "Miami", "Cancun, Mexico", "Toronto"], correct: 2, explanation: "Based in Cancun, Mexico — serving North American resorts." },
+  { q: "What is the monthly price for APEX Index?", answers: ["$299/mo", "$499/mo", "$799/mo", "$999/mo"], correct: 2, explanation: "APEX Index is $799/mo + $1,500 one-time setup fee (never charged again)." },
+  { q: "What is the one-time setup fee for APEX Index?", answers: ["$500", "$1,000", "$1,500", "$2,500"], correct: 2, explanation: "$1,500 one-time setup — this covers full implementation and onboarding. Never charged again." },
+  { q: "What is the monthly price for Vida Rep Academy?", answers: ["$299/mo", "$399/mo", "$499/mo", "$699/mo"], correct: 2, explanation: "Vida Rep Academy is $499/mo + $2,500 one-time setup for the full company (unlimited reps)." },
+  { q: "What is the one-time setup fee for Vida Rep Academy?", answers: ["$1,500", "$2,000", "$2,500", "$3,000"], correct: 2, explanation: "$2,500 one-time — covers white-label setup and full customization." },
+  { q: "What is the price of Operon AI per rep per month?", answers: ["$19/rep/mo", "$29/rep/mo", "$39/rep/mo", "$99/rep/mo"], correct: 2, explanation: "Operon AI is just $39/rep/mo + $1,900 one-time setup. At that price, one extra sale pays for 500 months!" },
+  { q: "What is the one-time setup fee for Operon AI?", answers: ["$900", "$1,500", "$1,900", "$2,500"], correct: 2, explanation: "$1,900 one-time setup for Operon AI — covers full integration with your CRM and lead systems." },
+  { q: "What is the full bundle price (all 3 products)?", answers: ["$2,500 all-in", "$3,500 all-in", "$4,500 all-in", "$5,500 all-in"], correct: 2, explanation: "$4,500 gets you all 3 products (APEX + Vida Rep Academy + Operon AI) — one-time fee, never charged again." },
+  { q: "The bundle setup fee is charged every year.", answers: ["True", "False"], correct: 1, explanation: "FALSE — the setup fee is ONE-TIME only. Never charged again. That's a major selling point!" },
+  { q: "What percentage of new timeshare reps fail within 90 days?", answers: ["30%", "50%", "70%", "90%"], correct: 2, explanation: "70% of new timeshare reps fail within 90 days — that's the problem Operon solves." },
+  { q: "How much does a bad hire typically cost a company?", answers: ["$5,000", "$15,000–$25,000", "$50,000", "$1,000"], correct: 1, explanation: "$15,000–$25,000 per bad hire — APEX Index helps eliminate bad hires before they cost you." },
+  { q: "What is the average timeshare sale value?", answers: ["$5,000", "$10,000", "$20,000", "$50,000"], correct: 2, explanation: "$20,000 average sale — use this in your ROI pitch. One extra close pays for months of Operon." },
+  { q: "What is the ROI of Operon AI at $39/rep if it helps close just 1 extra deal per month?", answers: ["500%", "5,000%", "13,000%", "Over 50,000%"], correct: 3, explanation: "$20,000 sale ÷ $39/mo = over 51,000% ROI! This number stops people in their tracks." },
+  { q: "A prospect says \"We already have a training program.\" Best response?", answers: ["\"OK, no problem\"", "\"Vida Rep Academy enhances what you have with digital structure and manager tracking\"", "\"Ours is better, cancel yours\"", "\"That's interesting\""], correct: 1, explanation: "Never dismiss their existing program — position Vida Rep Academy as an enhancement, not a replacement." },
+  { q: "A prospect says \"Too expensive.\" Best response?", answers: ["\"I can give you a discount right now\"", "\"If this helps close just 1 extra deal per rep, it pays for itself 20x over\"", "\"It's actually very cheap\"", "\"Let me check with my manager\""], correct: 1, explanation: "Reframe cost as ROI. One extra $20,000 sale covers months of fees. Never apologize for the price." },
+  { q: "A prospect says \"The reps won't use it.\" Best response?", answers: ["\"You're probably right\"", "\"Operon works in the background automatically — reps don't need to do anything extra\"", "\"Force them to use it\"", "\"That is a valid concern, goodbye\""], correct: 1, explanation: "Operon AI works automatically — it's not another tool for reps to learn. It runs in the background." },
+  { q: "What is the special ARDA offer?", answers: ["50% off forever", "2 months free", "1 month free when you sign up this week", "Free setup"], correct: 2, explanation: "1 month free when they sign up at ARDA — create urgency without giving away the farm!" },
+  { q: "Operon is the only company at ARDA offering Assessment + Training + AI Automation combined for vacation ownership.", answers: ["True", "False"], correct: 0, explanation: "TRUE — no competitor offers all three combined and built specifically for vacation ownership. That's your edge!" },
+  { q: "What is the best way to close someone at the booth?", answers: ["Hard pressure close", "Book a follow-up demo and get their business card", "Give them a brochure and walk away", "Ask for a check on the spot"], correct: 1, explanation: "Get the card, book the demo. ARDA is a relationship-building event — close the demo, not the deal on the spot." },
+  { q: "Who should you target at the ARDA booth?", answers: ["New sales reps", "VPs of Sales, Sales Directors, HR Directors, Training Managers", "Hotel guests", "Accountants"], correct: 1, explanation: "Target decision-makers: VPs of Sales, Sales Directors, HR Directors, and Training Managers." },
+  { q: "What is Operon's contact email?", answers: ["info@myoperon.io", "sales@myoperon.io", "mark@myoperon.io", "hello@myoperon.io"], correct: 2, explanation: "mark@myoperon.io — direct line to the founder. Personal touch matters in this industry." }
+];
+
+let current = 0;
+let score = 0;
+let answered = 0;
+
+function startQuiz() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = questions[current];
+  document.getElementById('question-counter').textContent = `Question ${current + 1} of ${questions.length}`;
+  document.getElementById('score-display').textContent = `Score: ${score}/${answered}`;
+  document.getElementById('progress-bar').style.width = `${((current) / questions.length) * 100}%`;
+  document.getElementById('question-text').textContent = `${current + 1}. ${q.q}`;
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'none';
+
+  const letters = ['A', 'B', 'C', 'D'];
+  const answersDiv = document.getElementById('answers');
+  answersDiv.innerHTML = '';
+  q.answers.forEach((ans, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.innerHTML = `<span class="letter">${letters[i]}</span>${ans}`;
+    btn.onclick = () => selectAnswer(i);
+    answersDiv.appendChild(btn);
+  });
+}
+
+function selectAnswer(index) {
+  const q = questions[current];
+  const btns = document.querySelectorAll('.answer-btn');
+  btns.forEach(b => b.disabled = true);
+  answered++;
+
+  const feedback = document.getElementById('feedback');
+  if (index === q.correct) {
+    score++;
+    btns[index].classList.add('correct');
+    feedback.className = 'feedback correct';
+    feedback.textContent = '✓ Correct! ' + (q.explanation || '');
+  } else {
+    btns[index].classList.add('wrong');
+    btns[q.correct].classList.add('correct');
+    feedback.className = 'feedback wrong';
+    feedback.textContent = '✗ Not quite. ' + (q.explanation || `The correct answer is ${['A','B','C','D'][q.correct]}.`);
+  }
+
+  feedback.style.display = 'block';
+  document.getElementById('score-display').textContent = `Score: ${score}/${answered}`;
+
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.style.display = 'block';
+  nextBtn.textContent = current + 1 < questions.length ? 'Next Question →' : 'See Results 🏆';
+}
+
+function nextQuestion() {
+  current++;
+  if (current < questions.length) {
+    showQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('results-screen').style.display = 'block';
+  document.getElementById('progress-bar').style.width = '100%';
+
+  const pct = score / questions.length;
+  let grade, msg;
+  if (score >= 27) { grade = 'A'; msg = '🏆 ARDA Ready! You\'re a Operon expert! Go get those clients!'; }
+  else if (score >= 23) { grade = 'B'; msg = '👍 Almost there! Review the pricing section and try again.'; }
+  else if (score >= 18) { grade = 'C'; msg = '📚 Good effort! Study the product details more carefully.'; }
+  else { grade = 'F'; msg = '❌ Keep studying! Review the training manual and retake the test.'; }
+
+  document.getElementById('grade-letter').textContent = grade;
+  document.getElementById('grade-letter').className = 'grade ' + grade;
+  document.getElementById('result-score').textContent = `You scored ${score} out of ${questions.length}`;
+  document.getElementById('result-msg').textContent = msg;
+}
+
+function retakeQuiz() {
+  current = 0; score = 0; answered = 0;
+  document.getElementById('results-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  showQuestion();
+}
+</script>
+
+<!-- Powered by Operon · Your AI Workforce Platform Badge -->
+<div style="text-align:center; padding: 16px; font-family: Inter, sans-serif;">
+  <a href="https://myoperon.io" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:#f5f3ff; border:1px solid #ede9fe; padding:8px 16px; border-radius:20px; text-decoration:none; color:#7c3aed; font-size:0.8rem; font-weight:600;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4.5 13.5H12L11 22L19.5 10.5H12L13 2Z" fill="#7c3aed"/></svg>
+    Powered by Operon · Your AI Workforce Platform
+  </a>
+</div>
+
+</body>
+</html>

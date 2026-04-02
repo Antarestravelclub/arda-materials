@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operon Revenue Tracker</title>
+    <style>
+        :root {
+            --violet-primary: #6B46C1;
+            --violet-light: #9F7AEA;
+            --violet-dark: #553C9A;
+            --violet-bg: #F3E8FF;
+            --green-profit: #22C55E;
+            --gray-light: #F7FAFC;
+            --gray-medium: #E2E8F0;
+            --gray-dark: #4A5568;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: var(--violet-primary);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        .tabs {
+            display: flex;
+            background: var(--violet-dark);
+            overflow-x: auto;
+        }
+        
+        .tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 18px 24px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .tab.active {
+            background: var(--violet-primary);
+            color: white;
+            border-bottom-color: var(--violet-light);
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.95rem;
+        }
+        
+        th {
+            background: var(--violet-primary);
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        th:first-child {
+            border-top-left-radius: 8px;
+        }
+        
+        th:last-child {
+            border-top-right-radius: 8px;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-medium);
+            color: var(--gray-dark);
+        }
+        
+        tr:hover td {
+            background: var(--violet-bg);
+        }
+        
+        .totals-row {
+            background: var(--violet-bg) !important;
+            font-weight: 700;
+            color: var(--violet-dark);
+        }
+        
+        .totals-row td {
+            border-top: 2px solid var(--violet-primary);
+        }
+        
+        .profit-positive {
+            color: var(--green-profit);
+            font-weight: 600;
+        }
+        
+        .margin-high {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--green-profit);
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-pilot {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .status-lead {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+        
+        .status-demo {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .summary-box {
+            background: var(--violet-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .summary-title {
+            color: var(--violet-dark);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .summary-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--violet-primary);
+        }
+        
+        .summary-label {
+            font-size: 0.85rem;
+            color: var(--gray-dark);
+            margin-bottom: 5px;
+        }
+        
+        .summary-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--violet-dark);
+        }
+        
+        .notes {
+            font-size: 0.85rem;
+            color: var(--gray-dark);
+            font-style: italic;
+            max-width: 200px;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+            
+            table {
+                font-size: 0.85rem;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+            }
+            
+            .tab {
+                padding: 14px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .notes {
+                max-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Operon Revenue Tracker</h1>
+            <p>Product Pricing, Revenue Projections & Client Pipeline</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab(0)">Products</button>
+            <button class="tab" onclick="showTab(1)">Costs</button>
+            <button class="tab" onclick="showTab(2)">Pipeline</button>
+            <button class="tab" onclick="showTab(3)">🔗 All Projects</button>
+        </div>
+        
+        <div class="content">
+            <!-- Sheet 1: Products -->
+            <div class="tab-content active" id="tab0">
+                <h2 style="color: var(--violet-dark); margin-bottom: 15px;">Product Pricing & Revenue Projections</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Monthly Fee</th>
+                            <th>Setup Fee</th>
+                            <th>Target Clients (M6)</th>
+                            <th>Target Clients (M12)</th>
+                            <th>Monthly Revenue (M6)</th>
+                            <th>Monthly Revenue (M12)</th>
+                            <th>Annual Revenue (M12)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>APEX Index</strong></td>
+                            <td>$799/mo</td>
+                            <td>$1,500</td>
+                            <td>5</td>
+                            <td>15</td>
+                            <td>$3,995</td>
+                            <td>$11,985</td>
+                            <td>$143,820</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vida Rep Academy</strong></td>
+                            <td>$499/mo</td>
+                            <td>$2,500</td>
+                            <td>5</td>
+                            <td>15</td>
+                            <td>$2,495</td>
+                            <td>$7,485</td>
+                            <td>$89,820</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Operon Follow-Up System</strong></td>
+                            <td>$39/rep/mo (avg 10 = $390)</td>
+                            <td>$1,900</td>
+                            <td>5</td>
+                            <td>20</td>
+                            <td>$1,950</td>
+                            <td>$7,800</td>
+                            <td>$93,600</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Operon AI Dashboard</strong></td>
+                            <td>$99/mo</td>
+                            <td>$0</td>
+                            <td>10</td>
+                            <td>30</td>
+                            <td>$990</td>
+                            <td>$2,970</td>
+                            <td>$35,640</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Solace Wellness</strong></td>
+                            <td>$9.99-49.99/mo avg $19.99</td>
+                            <td>$0</td>
+                            <td>50</td>
+                            <td>200</td>
+                            <td>$999</td>
+                            <td>$3,998</td>
+                            <td>$47,976</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Secure Check-In</strong></td>
+                            <td>$99/mo per resort</td>
+                            <td>$500</td>
+                            <td>3</td>
+                            <td>10</td>
+                            <td>$297</td>
+                            <td>$990</td>
+                            <td>$11,880</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vida Rep Academy (license)</strong></td>
+                            <td>$499/mo</td>
+                            <td>$2,500</td>
+                            <td>3</td>
+                            <td>8</td>
+                            <td>$1,497</td>
+                            <td>$3,992</td>
+                            <td>$47,904</td>
+                        </tr>
+                        <tr>
+                            <td><strong>APEX Index Assessments</strong></td>
+                            <td>$199/assessment</td>
+                            <td>N/A</td>
+                            <td>20/mo</td>
+                            <td>50/mo</td>
+                            <td>$3,980</td>
+                            <td>$9,950</td>
+                            <td>$119,400</td>
+                        </tr>
+                        <tr class="totals-row">
+                            <td><strong>TOTALS</strong></td>
+                            <td colspan="4"></td>
+                            <td><strong>$15,197</strong></td>
+                            <td><strong>$53,160</strong></td>
+                            <td><strong>$589,040</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="summary-box">
+                    <div class="summary-title">💰 Financial Summary</div>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-label">Total Monthly Revenue (M6)</div>
+                            <div class="summary-value">$15,197</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Total Monthly Revenue (M12)</div>
+                            <div class="summary-value">$53,160</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Total Annual Revenue (M12)</div>
+                            <div class="summary-value">$589,040</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Total Setup Fees (M12)</div>
+                            <div class="summary-value">$12,900</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sheet 2: Costs -->
+            <div class="tab-content" id="tab1">
+                <h2 style="color: var(--violet-dark); margin-bottom: 15px;">Cost vs Revenue per Product</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Monthly Revenue</th>
+                            <th>Monthly Cost</th>
+                            <th>Monthly Profit</th>
+                            <th>Margin %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>APEX Index</strong></td>
+                            <td>$11,985</td>
+                            <td>$75</td>
+                            <td class="profit-positive">$11,910</td>
+                            <td><span class="margin-high">99.4%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vida Rep Academy</strong></td>
+                            <td>$7,485</td>
+                            <td>$150</td>
+                            <td class="profit-positive">$7,335</td>
+                            <td><span class="margin-high">98.0%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Operon Follow-Up System</strong></td>
+                            <td>$7,800</td>
+                            <td>$150</td>
+                            <td class="profit-positive">$7,650</td>
+                            <td><span class="margin-high">98.1%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Operon AI Dashboard</strong></td>
+                            <td>$2,970</td>
+                            <td>$150</td>
+                            <td class="profit-positive">$2,820</td>
+                            <td><span class="margin-high">94.9%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Solace Wellness</strong></td>
+                            <td>$3,998</td>
+                            <td>$400</td>
+                            <td class="profit-positive">$3,598</td>
+                            <td><span class="margin-high">90.0%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Secure Check-In</strong></td>
+                            <td>$990</td>
+                            <td>$15</td>
+                            <td class="profit-positive">$975</td>
+                            <td><span class="margin-high">98.5%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Vida Rep Academy (license)</strong></td>
+                            <td>$3,992</td>
+                            <td>$80</td>
+                            <td class="profit-positive">$3,912</td>
+                            <td><span class="margin-high">98.0%</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>APEX Index Assessments</strong></td>
+                            <td>$9,950</td>
+                            <td>$1,000</td>
+                            <td class="profit-positive">$8,950</td>
+                            <td><span class="margin-high">90.0%</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Sheet 3: Pipeline -->
+            <div class="tab-content" id="tab2">
+                <h2 style="color: var(--violet-dark); margin-bottom: 15px;">Client Pipeline Tracker</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Company Name</th>
+                            <th>Contact</th>
+                            <th>Product Interest</th>
+                            <th>Monthly Value</th>
+                            <th>Setup Fee</th>
+                            <th>Status</th>
+                            <th>Next Follow-Up</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Vida Vacations</strong></td>
+                            <td>Mark Piff</td>
+                            <td>Follow-Up System + VRA</td>
+                            <td>$890</td>
+                            <td>$4,400</td>
+                            <td><span class="status-badge status-pilot">Pilot</span></td>
+                            <td>April 1</td>
+                            <td class="notes">3 rep pilot starting</td>
+                        </tr>
+                        <tr>
+                            <td><strong>[Prospect 1]</strong></td>
+                            <td>-</td>
+                            <td>APEX Index</td>
+                            <td>$799</td>
+                            <td>$1,500</td>
+                            <td><span class="status-badge status-lead">Lead</span></td>
+                            <td>-</td>
+                            <td class="notes">Met at ARDA</td>
+                        </tr>
+                        <tr>
+                            <td><strong>[Prospect 2]</strong></td>
+                            <td>-</td>
+                            <td>Full Bundle</td>
+                            <td>$1,288</td>
+                            <td>$5,900</td>
+                            <td><span class="status-badge status-demo">Demo Scheduled</span></td>
+                            <td>-</td>
+                            <td class="notes">VP of Sales interested</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="summary-box">
+                    <div class="summary-title">🎯 Pipeline Summary</div>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-label">Total Monthly Value</div>
+                            <div class="summary-value">$2,977</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Total Setup Fees</div>
+                            <div class="summary-value">$11,800</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Active Opportunities</div>
+                            <div class="summary-value">3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+            <!-- Tab 4: All Projects Directory -->
+            <div class="tab-content" id="tab3">
+              <h2 style="color:#7c3aed;margin-bottom:20px;">🔗 Master Project Directory</h2>
+              <table>
+                <thead><tr><th>#</th><th>Project</th><th>Description</th><th>Live URL</th><th>GitHub</th><th>Monthly Fee</th><th>Status</th></tr></thead>
+                <tbody>
+                  <tr><td>1</td><td><strong>Operon AI</strong></td><td>AI Workforce Platform — follow-up, email, voice</td><td><a href="https://myoperon.io" target="_blank" style="color:#7c3aed;">myoperon.io</a></td><td><a href="https://github.com/Antarestravelclub/Operon" target="_blank" style="color:#7c3aed;">Operon</a></td><td>$39/rep/mo</td><td><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Live ✅</span></td></tr>
+                  <tr><td>2</td><td><strong>Solace Wellness</strong></td><td>AI Wellness Coach — mental health platform</td><td><a href="https://solace-wellness.io" target="_blank" style="color:#7c3aed;">solace-wellness.io</a></td><td><a href="https://github.com/Antarestravelclub/instant-coach-glow" target="_blank" style="color:#7c3aed;">instant-coach-glow</a></td><td>$9.99-$49.99/mo</td><td><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Live ✅</span></td></tr>
+                  <tr><td>3</td><td><strong>APEX Index</strong></td><td>AI Sales Talent Assessment for vacation ownership</td><td><a href="https://apex-index.com" target="_blank" style="color:#7c3aed;">apex-index.com</a></td><td><a href="https://github.com/Antarestravelclub/apexindex" target="_blank" style="color:#7c3aed;">apexindex</a></td><td>$799/mo</td><td><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Live ✅</span></td></tr>
+                  <tr><td>4</td><td><strong>Vida Rep Academy</strong></td><td>30-day digital sales training for resort reps</td><td><a href="https://vida-rep-academy-9d6cda93.vercel.app" target="_blank" style="color:#7c3aed;">vida-rep-academy</a></td><td><a href="https://github.com/Antarestravelclub/vida-rep-academy-9d6cda93" target="_blank" style="color:#7c3aed;">vida-rep-academy-9d6cda93</a></td><td>$499/mo</td><td><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Live ✅</span></td></tr>
+                  <tr><td>5</td><td><strong>Secure Check-In</strong></td><td>Member Update QR system for resort promoters</td><td><a href="https://secure-checkin-confirm.vercel.app" target="_blank" style="color:#7c3aed;">secure-checkin-confirm</a></td><td><a href="https://github.com/Antarestravelclub/secure-checkin-confirm" target="_blank" style="color:#7c3aed;">secure-checkin-confirm</a></td><td>$99/mo</td><td><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Live ✅</span></td></tr>
+                  <tr><td>6</td><td><strong>ARDA Materials</strong></td><td>Pitch deck, quiz, contract, workflow</td><td><a href="https://arda-materials.vercel.app" target="_blank" style="color:#7c3aed;">arda-materials.vercel.app</a></td><td>—</td><td>—</td><td><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Live ✅</span></td></tr>
+                  <tr><td>7</td><td><strong>Vacation Future Finder</strong></td><td>Lovable project</td><td><a href="https://vacation-future-finder.vercel.app" target="_blank" style="color:#7c3aed;">vacation-future-finder</a></td><td><a href="https://github.com/Antarestravelclub/vacation-future-finder" target="_blank" style="color:#7c3aed;">vacation-future-finder</a></td><td>TBD</td><td><span style="background:#ede9fe;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Deployed</span></td></tr>
+                  <tr><td>8</td><td><strong>Travelwise Savings Portal</strong></td><td>Lovable project</td><td><a href="https://travelwise-savings-portal.vercel.app" target="_blank" style="color:#7c3aed;">travelwise-savings-portal</a></td><td><a href="https://github.com/Antarestravelclub/travelwise-savings-portal" target="_blank" style="color:#7c3aed;">travelwise-savings-portal</a></td><td>TBD</td><td><span style="background:#ede9fe;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Deployed</span></td></tr>
+                  <tr><td>9</td><td><strong>Client Sales Matchmaker Pro</strong></td><td>Lovable project</td><td><a href="https://client-sales-matchmaker-pro.vercel.app" target="_blank" style="color:#7c3aed;">client-sales-matchmaker-pro</a></td><td><a href="https://github.com/Antarestravelclub/client-sales-matchmaker-pro" target="_blank" style="color:#7c3aed;">client-sales-matchmaker-pro</a></td><td>TBD</td><td><span style="background:#ede9fe;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Deployed</span></td></tr>
+                  <tr><td>10</td><td><strong>Your Project Booster</strong></td><td>Lovable project</td><td><a href="https://your-project-booster.vercel.app" target="_blank" style="color:#7c3aed;">your-project-booster</a></td><td><a href="https://github.com/Antarestravelclub/your-project-booster" target="_blank" style="color:#7c3aed;">your-project-booster</a></td><td>TBD</td><td><span style="background:#ede9fe;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Deployed</span></td></tr>
+                  <tr><td>11</td><td><strong>Antares Sales Commission Calc</strong></td><td>Lovable project</td><td><a href="https://antares-travel-club-sales-commission-calc.vercel.app" target="_blank" style="color:#7c3aed;">commission-calc</a></td><td><a href="https://github.com/Antarestravelclub/antares-travel-club-sales-commission-calc" target="_blank" style="color:#7c3aed;">antares-commission-calc</a></td><td>TBD</td><td><span style="background:#ede9fe;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Deployed</span></td></tr>
+                  <tr><td>12</td><td><strong>Gememi</strong></td><td>Lovable project</td><td><a href="https://gememi.vercel.app" target="_blank" style="color:#7c3aed;">gememi.vercel.app</a></td><td><a href="https://github.com/Antarestravelclub/gememi" target="_blank" style="color:#7c3aed;">gememi</a></td><td>TBD</td><td><span style="background:#ede9fe;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Deployed</span></td></tr>
+                  <tr><td>13</td><td><strong>Empathic Voice Interface</strong></td><td>Lovable project</td><td><a href="https://empathic-voice-interface-starter.vercel.app" target="_blank" style="color:#7c3aed;">empathic-voice</a></td><td><a href="https://github.com/Antarestravelclub/empathic-voice-interface-starter" target="_blank" style="color:#7c3aed;">empathic-voice-starter</a></td><td>TBD</td><td><span style="background:#ede9fe;color:#5b21b6;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Deployed</span></td></tr>
+                  <tr><td>14</td><td><strong>Vida Follow-Up Workflow</strong></td><td>Automated sales follow-up system demo</td><td><a href="https://arda-materials.vercel.app/vida-followup-workflow.html" target="_blank" style="color:#7c3aed;">vida-followup-workflow</a></td><td>—</td><td>$65/rep/mo</td><td><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Live ✅</span></td></tr>
+                  <tr><td>15</td><td><strong>Rep Onboarding</strong></td><td>Operon rep onboarding + intake system</td><td><a href="https://myoperon.io/rep/onboarding" target="_blank" style="color:#7c3aed;">myoperon.io/rep/onboarding</a></td><td>—</td><td>Included</td><td><span style="background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;font-size:0.8rem;">Live ✅</span></td></tr>
+                </tbody>
+              </table>
+              <div style="margin-top:20px;padding:16px;background:#f5f3ff;border-radius:12px;border:1px solid #ede9fe;">
+                <strong style="color:#7c3aed;">Total Projects: 15+ live</strong> | 
+                <strong style="color:#7c3aed;">GitHub Repos: 26+</strong> | 
+                <strong style="color:#7c3aed;">All under: github.com/Antarestravelclub</strong>
+              </div>
+            </div>
+
+    <script>
+        function showTab(index) {
+            // Update tab buttons
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach((tab, i) => {
+                if (i === index) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // Update tab content
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach((content, i) => {
+                if (i === index) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

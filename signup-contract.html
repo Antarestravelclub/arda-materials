@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operon — Service Agreement</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f1729; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; }
+  .container { max-width: 760px; margin: 0 auto; }
+  h1 { text-align: center; color: #d4af37; font-size: 1.7rem; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: #aaa; font-size: 0.9rem; margin-bottom: 28px; }
+  .section { background: #1a2540; border-radius: 14px; padding: 24px; margin-bottom: 20px; border: 1px solid #2a3a60; }
+  .section h2 { color: #d4af37; font-size: 1.05rem; margin-bottom: 16px; border-bottom: 1px solid #2a3a60; padding-bottom: 10px; }
+  .form-row { display: flex; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
+  .form-group { flex: 1; min-width: 200px; }
+  label { display: block; font-size: 0.82rem; color: #aaa; margin-bottom: 5px; }
+  input[type="text"], input[type="email"], input[type="tel"], input[type="number"] {
+    width: 100%; background: #0f1f3d; border: 1px solid #2a3a60; color: #fff;
+    padding: 11px 14px; border-radius: 8px; font-size: 0.95rem;
+  }
+  input:focus { outline: none; border-color: #d4af37; }
+
+  /* Product Cards */
+  .products { display: flex; flex-direction: column; gap: 14px; }
+  .product-card { background: #0f1f3d; border: 2px solid #2a3a60; border-radius: 12px; padding: 18px; cursor: pointer; transition: all 0.2s; user-select: none; }
+  .product-card:hover { border-color: #d4af37; }
+  .product-card.selected { border-color: #d4af37; background: #1a3a20; }
+  .product-header { display: flex; align-items: center; gap: 14px; }
+  .checkbox { width: 24px; height: 24px; border: 2px solid #2a3a60; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+  .product-card.selected .checkbox { background: #d4af37; border-color: #d4af37; color: #0f1729; font-weight: bold; }
+  .product-name { font-size: 1.05rem; font-weight: bold; color: #fff; }
+  .product-desc { font-size: 0.85rem; color: #aaa; margin-top: 2px; }
+  .product-price { margin-left: auto; text-align: right; }
+  .price-mo { color: #d4af37; font-weight: bold; font-size: 1rem; }
+  .price-setup { color: #aaa; font-size: 0.8rem; }
+  .rep-count { display: none; margin-top: 14px; padding-top: 14px; border-top: 1px solid #2a3a60; }
+  .rep-count label { color: #d4af37; }
+  .rep-count input { width: 100px; }
+
+  /* Summary */
+  .summary-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #2a3a60; font-size: 0.95rem; }
+  .summary-row:last-child { border: none; }
+  .summary-total { display: flex; justify-content: space-between; padding: 14px 0 0; font-size: 1.1rem; font-weight: bold; color: #d4af37; }
+
+  /* Terms */
+  .terms-box { background: #0f1f3d; border: 1px solid #2a3a60; border-radius: 8px; padding: 16px; font-size: 0.82rem; color: #aaa; line-height: 1.7; max-height: 180px; overflow-y: auto; margin-bottom: 16px; }
+  .terms-box h4 { color: #d4af37; margin-bottom: 8px; }
+  .terms-agree { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 0.9rem; color: #ccc; }
+  .terms-agree input { width: 18px; height: 18px; accent-color: #d4af37; cursor: pointer; }
+
+  /* Signature */
+  canvas { border: 2px solid #2a3a60; border-radius: 10px; background: #0a1020; cursor: crosshair; display: block; touch-action: none; }
+  .sig-actions { display: flex; gap: 10px; margin-top: 10px; }
+  .clear-btn { background: transparent; border: 1px solid #e74c3c; color: #e74c3c; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+  .clear-btn:hover { background: #3a0d0d; }
+  .sig-hint { font-size: 0.8rem; color: #555; margin-top: 6px; }
+
+  /* Submit */
+  .submit-btn { width: 100%; padding: 18px; background: #d4af37; color: #0f1729; border: none; border-radius: 12px; font-size: 1.15rem; font-weight: bold; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
+  .submit-btn:hover { background: #f0c84a; }
+  .submit-btn:disabled { background: #555; color: #999; cursor: not-allowed; }
+
+  /* Success */
+  #success { display: none; text-align: center; background: #1a2540; border-radius: 16px; padding: 40px; border: 1px solid #2ecc71; }
+  #success h2 { color: #2ecc71; font-size: 1.8rem; margin-bottom: 12px; }
+  #success p { color: #ccc; margin-bottom: 20px; line-height: 1.6; }
+  .dl-btn { display: inline-block; padding: 14px 30px; background: #d4af37; color: #0f1729; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; margin: 6px; }
+  .dl-btn:hover { background: #f0c84a; }
+  .new-btn { display: inline-block; padding: 14px 30px; background: transparent; color: #d4af37; border: 2px solid #d4af37; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; margin: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🤝 Operon</h1>
+  <p class="subtitle">Service Agreement — ARDA 2026</p>
+
+  <div id="form-area">
+
+    <!-- Company Info -->
+    <div class="section">
+      <h2>📋 Company Information</h2>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Company / Resort Name *</label>
+          <input type="text" id="company" placeholder="Marriott Vacation Club">
+        </div>
+        <div class="form-group">
+          <label>Contact Name *</label>
+          <input type="text" id="contact" placeholder="Jane Smith">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Title / Role</label>
+          <input type="text" id="title" placeholder="VP of Sales">
+        </div>
+        <div class="form-group">
+          <label>Email Address *</label>
+          <input type="email" id="email" placeholder="jane@resort.com">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="phone" placeholder="+1 (555) 000-0000">
+        </div>
+        <div class="form-group">
+          <label>Number of Sales Reps</label>
+          <input type="number" id="totalreps" placeholder="e.g. 25" min="1">
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Selection -->
+    <div class="section">
+      <h2>🛒 Select Services</h2>
+      <div class="products">
+
+        <div class="product-card" id="card-apex" onclick="toggleProduct('apex')">
+          <div class="product-header">
+            <div class="checkbox" id="chk-apex"></div>
+            <div>
+              <div class="product-name">APEX Index</div>
+              <div class="product-desc">AI-powered sales talent assessment for vacation ownership</div>
+            </div>
+            <div class="product-price">
+              <div class="price-mo">$799/mo</div>
+              <div class="price-setup">+ $1,500 one-time setup</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card" id="card-vra" onclick="toggleProduct('vra')">
+          <div class="product-header">
+            <div class="checkbox" id="chk-vra"></div>
+            <div>
+              <div class="product-name">Vida Rep Academy</div>
+              <div class="product-desc">30-day digital training program for new sales reps</div>
+            </div>
+            <div class="product-price">
+              <div class="price-mo">$499/mo</div>
+              <div class="price-setup">+ $2,500 one-time setup</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card" id="card-operon" onclick="toggleProduct('operon')">
+          <div class="product-header">
+            <div class="checkbox" id="chk-operon"></div>
+            <div>
+              <div class="product-name">Operon AI</div>
+              <div class="product-desc">AI-powered sales assistant — automatic lead follow-up 24/7</div>
+            </div>
+            <div class="product-price">
+              <div class="price-mo">$39/rep/mo</div>
+              <div class="price-setup">+ $1,900 one-time setup</div>
+            </div>
+          </div>
+          <div class="rep-count" id="rep-count-operon">
+            <label>Number of reps for Operon AI:</label>
+            <input type="number" id="operon-reps" value="1" min="1" onclick="e => e.stopPropagation()" oninput="updateSummary()">
+          </div>
+        </div>
+
+        <div class="product-card" id="card-bundle" onclick="toggleProduct('bundle')" style="border-color:#d4af37; background: linear-gradient(135deg, #1a2a10, #0f1f3d);">
+          <div class="product-header">
+            <div class="checkbox" id="chk-bundle"></div>
+            <div>
+              <div class="product-name">⭐ Full Bundle — All 3 Products</div>
+              <div class="product-desc">APEX Index + Vida Rep Academy + Operon AI — best value!</div>
+            </div>
+            <div class="product-price">
+              <div class="price-mo" style="font-size:1.2rem;">$4,500</div>
+              <div class="price-setup">one-time, all-inclusive</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ARDA Special -->
+      <div style="margin-top:16px; padding:14px; background:#1a3a10; border-radius:10px; border:1px solid #2ecc71; font-size:0.9rem; color:#2ecc71;">
+        🎁 <strong>ARDA Special:</strong> Sign today and receive your <strong>first month FREE</strong>!
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="section" id="summary-section">
+      <h2>💰 Order Summary</h2>
+      <div id="summary-rows">
+        <div style="color:#555; font-size:0.9rem;">Select a service above to see pricing.</div>
+      </div>
+      <div class="summary-total" id="summary-total" style="display:none;">
+        <span>Total Setup (one-time):</span><span id="total-setup">$0</span>
+      </div>
+      <div class="summary-total" id="summary-monthly" style="display:none; padding-top:6px;">
+        <span>Monthly:</span><span id="total-monthly">$0/mo</span>
+      </div>
+      <div style="margin-top:10px; font-size:0.8rem; color:#888;">* Setup fees are one-time only — never charged again.</div>
+    </div>
+
+    <!-- Terms -->
+    <div class="section">
+      <h2>📄 Terms & Conditions</h2>
+      <div class="terms-box">
+        <h4>Operon Service Agreement</h4>
+        <p><strong>1. Services.</strong> Operon agrees to provide the selected services as indicated above. Services will be activated within 5–10 business days of agreement execution and receipt of setup fee.</p><br>
+        <p><strong>2. Payment Terms.</strong> The one-time setup fee is due upon signing. Monthly fees are billed on the 1st of each month. The first month is complimentary for agreements signed at ARDA 2026.</p><br>
+        <p><strong>3. Cancellation.</strong> Monthly subscriptions may be cancelled with 30 days written notice. Setup fees are non-refundable after onboarding has commenced.</p><br>
+        <p><strong>4. Confidentiality.</strong> Both parties agree to keep proprietary information confidential and not disclose it to third parties without prior written consent.</p><br>
+        <p><strong>5. Intellectual Property.</strong> Operon retains all rights to its software and platforms. Client data remains the property of the client.</p><br>
+        <p><strong>6. Limitation of Liability.</strong> Operon's liability shall not exceed the fees paid in the 3 months prior to any claim. Operon is not liable for indirect or consequential damages.</p><br>
+        <p><strong>7. Governing Law.</strong> This agreement is governed by the laws of Mexico. Disputes shall be resolved by arbitration.</p><br>
+        <p><strong>8. Entire Agreement.</strong> This document constitutes the entire agreement between the parties and supersedes all prior discussions.</p>
+      </div>
+      <label class="terms-agree">
+        <input type="checkbox" id="terms-check" onchange="checkReady()">
+        I have read and agree to the Terms & Conditions above
+      </label>
+    </div>
+
+    <!-- Signature -->
+    <div class="section">
+      <h2>✍️ Digital Signature</h2>
+      <p style="color:#aaa; font-size:0.85rem; margin-bottom:12px;">Sign below using your stylus or finger. By signing, you agree to the selected services and terms above.</p>
+      <canvas id="sig-canvas" width="700" height="160"></canvas>
+      <div class="sig-actions">
+        <button class="clear-btn" onclick="clearSig()">✕ Clear Signature</button>
+        <span style="color:#aaa; font-size:0.85rem; align-self:center;" id="sig-status">No signature yet</span>
+      </div>
+      <div style="margin-top:16px;">
+        <label style="color:#aaa; font-size:0.85rem;">Print Name *</label>
+        <input type="text" id="print-name" placeholder="Jane Smith" style="margin-top:5px;" oninput="checkReady()">
+      </div>
+      <div style="margin-top:10px; color:#aaa; font-size:0.8rem;">
+        Date: <span id="sig-date"></span>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="submitContract()" disabled>
+      ✍️ Sign & Submit Agreement
+    </button>
+
+  </div>
+
+  <!-- Success Screen -->
+  <div id="success">
+    <h2>✅ Agreement Signed!</h2>
+    <p>Thank you! Your Operon service agreement has been submitted.<br>
+    A copy will be emailed to you and to our team shortly.<br><br>
+    <strong>Welcome to the Operon family!</strong> 🎉</p>
+    <button class="dl-btn" onclick="downloadPDF()">⬇️ Download PDF Copy</button>
+    <br>
+    <button class="new-btn" onclick="location.reload()">+ New Agreement</button>
+  </div>
+
+</div>
+
+<script>
+// Date
+document.getElementById('sig-date').textContent = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+
+// Resize canvas
+function resizeCanvas() {
+  const canvas = document.getElementById('sig-canvas');
+  const w = canvas.parentElement.clientWidth - 48;
+  canvas.width = Math.min(w, 700);
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// Products state
+const selected = { apex: false, vra: false, operon: false, bundle: false };
+
+function toggleProduct(id) {
+  if (id === 'bundle') {
+    selected.bundle = !selected.bundle;
+    if (selected.bundle) { selected.apex = false; selected.vra = false; selected.operon = false; }
+  } else {
+    selected[id] = !selected[id];
+    if (selected.apex || selected.vra || selected.operon) selected.bundle = false;
+  }
+  ['apex','vra','operon','bundle'].forEach(p => {
+    document.getElementById('card-'+p).classList.toggle('selected', selected[p]);
+    document.getElementById('chk-'+p).textContent = selected[p] ? '✓' : '';
+  });
+  document.getElementById('rep-count-operon').style.display = selected.operon ? 'block' : 'none';
+  updateSummary();
+  checkReady();
+}
+
+function updateSummary() {
+  const rows = document.getElementById('summary-rows');
+  let html = '';
+  let totalSetup = 0;
+  let totalMonthly = 0;
+  const reps = parseInt(document.getElementById('operon-reps')?.value) || 1;
+
+  if (selected.bundle) {
+    html += `<div class="summary-row"><span>⭐ Full Bundle (all 3 products)</span><span>$4,500 one-time</span></div>`;
+    html += `<div class="summary-row"><span>🎁 ARDA First Month Free</span><span style="color:#2ecc71;">-$0</span></div>`;
+    totalSetup = 4500;
+  } else {
+    if (selected.apex) { html += `<div class="summary-row"><span>APEX Index — $799/mo</span><span>Setup: $1,500</span></div>`; totalSetup += 1500; totalMonthly += 799; }
+    if (selected.vra) { html += `<div class="summary-row"><span>Vida Rep Academy — $499/mo</span><span>Setup: $2,500</span></div>`; totalSetup += 2500; totalMonthly += 499; }
+    if (selected.operon) { html += `<div class="summary-row"><span>Operon AI — $39 × ${reps} rep${reps>1?'s':''} = $${39*reps}/mo</span><span>Setup: $1,900</span></div>`; totalSetup += 1900; totalMonthly += 39*reps; }
+    if (totalMonthly > 0) html += `<div class="summary-row" style="color:#2ecc71;"><span>🎁 ARDA First Month Free</span><span>-$${totalMonthly}</span></div>`;
+  }
+
+  if (!html) { rows.innerHTML = '<div style="color:#555; font-size:0.9rem;">Select a service above to see pricing.</div>'; document.getElementById('summary-total').style.display='none'; document.getElementById('summary-monthly').style.display='none'; return; }
+  rows.innerHTML = html;
+  document.getElementById('summary-total').style.display = 'flex';
+  document.getElementById('total-setup').textContent = '$' + totalSetup.toLocaleString();
+  if (!selected.bundle && totalMonthly > 0) {
+    document.getElementById('summary-monthly').style.display = 'flex';
+    document.getElementById('total-monthly').textContent = '$' + totalMonthly.toLocaleString() + '/mo (Month 2 onwards)';
+  } else { document.getElementById('summary-monthly').style.display = 'none'; }
+}
+
+// Signature canvas
+const canvas = document.getElementById('sig-canvas');
+const ctx = canvas.getContext('2d');
+ctx.strokeStyle = '#d4af37';
+ctx.lineWidth = 2.5;
+ctx.lineCap = 'round';
+ctx.lineJoin = 'round';
+let drawing = false;
+let hasSig = false;
+
+function getPos(e) {
+  const r = canvas.getBoundingClientRect();
+  if (e.touches) return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+canvas.addEventListener('mousedown', e => { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+canvas.addEventListener('mousemove', e => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); hasSig = true; document.getElementById('sig-status').textContent = '✓ Signature captured'; document.getElementById('sig-status').style.color = '#2ecc71'; checkReady(); });
+canvas.addEventListener('mouseup', () => drawing = false);
+canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+canvas.addEventListener('touchmove', e => { e.preventDefault(); if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); hasSig = true; document.getElementById('sig-status').textContent = '✓ Signature captured'; document.getElementById('sig-status').style.color = '#2ecc71'; checkReady(); });
+canvas.addEventListener('touchend', () => drawing = false);
+
+function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); hasSig = false; document.getElementById('sig-status').textContent = 'No signature yet'; document.getElementById('sig-status').style.color = '#aaa'; checkReady(); }
+
+function checkReady() {
+  const hasProduct = selected.apex || selected.vra || selected.operon || selected.bundle;
+  const hasInfo = document.getElementById('company').value.trim() && document.getElementById('contact').value.trim() && document.getElementById('email').value.trim();
+  const hasTerms = document.getElementById('terms-check').checked;
+  const hasName = document.getElementById('print-name').value.trim();
+  document.getElementById('submit-btn').disabled = !(hasProduct && hasInfo && hasTerms && hasSig && hasName);
+}
+
+// Wire inputs
+['company','contact','email','phone','print-name'].forEach(id => document.getElementById(id)?.addEventListener('input', checkReady));
+
+let contractData = {};
+
+function submitContract() {
+  const reps = parseInt(document.getElementById('operon-reps')?.value) || 1;
+  contractData = {
+    company: document.getElementById('company').value,
+    contact: document.getElementById('contact').value,
+    title: document.getElementById('title').value,
+    email: document.getElementById('email').value,
+    phone: document.getElementById('phone').value,
+    totalReps: document.getElementById('totalreps').value,
+    printName: document.getElementById('print-name').value,
+    date: document.getElementById('sig-date').textContent,
+    products: selected,
+    operonReps: reps,
+    sigData: canvas.toDataURL('image/png'),
+  };
+  document.getElementById('form-area').style.display = 'none';
+  document.getElementById('success').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const d = contractData;
+  const reps = parseInt(document.getElementById('operon-reps')?.value) || 1;
+
+  doc.setFontSize(20); doc.setTextColor(212,175,55); doc.text('Operon — Service Agreement', 105, 20, {align:'center'});
+  doc.setFontSize(11); doc.setTextColor(100); doc.text('ARDA 2026 | Las Vegas', 105, 28, {align:'center'});
+  doc.setDrawColor(212,175,55); doc.line(20, 32, 190, 32);
+
+  doc.setFontSize(12); doc.setTextColor(30);
+  doc.text('CLIENT INFORMATION', 20, 42);
+  doc.setFontSize(10); doc.setTextColor(60);
+  doc.text(`Company: ${d.company}`, 20, 52);
+  doc.text(`Contact: ${d.contact}  |  Title: ${d.title}`, 20, 60);
+  doc.text(`Email: ${d.email}  |  Phone: ${d.phone}`, 20, 68);
+  doc.text(`Total Sales Reps: ${d.totalReps}`, 20, 76);
+
+  doc.setDrawColor(212,175,55); doc.line(20, 82, 190, 82);
+  doc.setFontSize(12); doc.setTextColor(30); doc.text('SELECTED SERVICES', 20, 92);
+  doc.setFontSize(10); doc.setTextColor(60);
+
+  let y = 102;
+  if (d.products.bundle) { doc.text('⭐ Full Bundle (APEX + Vida Rep Academy + Operon AI) — $4,500 one-time', 20, y); y+=10; }
+  else {
+    if (d.products.apex) { doc.text('✓ APEX Index — $799/mo + $1,500 one-time setup', 20, y); y+=10; }
+    if (d.products.vra) { doc.text('✓ Vida Rep Academy — $499/mo + $2,500 one-time setup', 20, y); y+=10; }
+    if (d.products.operon) { doc.text(`✓ Operon AI — $39 × ${d.operonReps} reps = $${39*d.operonReps}/mo + $1,900 setup`, 20, y); y+=10; }
+  }
+
+  y += 4;
+  doc.setTextColor(0,150,0);
+  doc.text('🎁 ARDA Special: First month FREE!', 20, y); y += 14;
+
+  doc.setDrawColor(212,175,55); doc.line(20, y, 190, y); y += 10;
+  doc.setFontSize(12); doc.setTextColor(30); doc.text('TERMS', 20, y); y += 10;
+  doc.setFontSize(8); doc.setTextColor(80);
+  const terms = [
+    '1. Services will be activated within 5–10 business days of agreement execution and receipt of setup fee.',
+    '2. One-time setup fees are due upon signing. Monthly fees billed on the 1st of each month.',
+    '3. Monthly subscriptions may be cancelled with 30 days written notice. Setup fees are non-refundable.',
+    '4. Both parties agree to keep proprietary information confidential.',
+    '5. Operon retains all rights to its software. Client data remains property of client.',
+    '6. Operons liability shall not exceed fees paid in the 3 months prior to any claim.',
+    '7. This agreement is governed by the laws of Mexico.',
+  ];
+  terms.forEach(t => { doc.text(t, 20, y, {maxWidth:170}); y += 8; });
+
+  y += 6;
+  doc.setDrawColor(212,175,55); doc.line(20, y, 190, y); y += 10;
+  doc.setFontSize(12); doc.setTextColor(30); doc.text('SIGNATURE', 20, y); y += 8;
+
+  // Add signature image
+  try { doc.addImage(d.sigData, 'PNG', 20, y, 80, 30); } catch(e) {}
+  doc.setFontSize(10); doc.setTextColor(60);
+  doc.text(`Print Name: ${d.printName}`, 20, y+36);
+  doc.text(`Date: ${d.date}`, 20, y+44);
+  doc.line(20, y+32, 100, y+32);
+
+  doc.text('Operon Representative: Mark Piff', 120, y+36);
+  doc.text('mark@myoperon.io | myoperon.io', 120, y+44);
+
+  doc.save(`OperonTech-Agreement-${d.company.replace(/\s+/g,'-')}-${new Date().toISOString().slice(0,10)}.pdf`);
+}
+</script>
+
+<!-- Powered by Operon · Your AI Workforce Platform Badge -->
+<div style="text-align:center; padding: 16px; font-family: Inter, sans-serif;">
+  <a href="https://myoperon.io" target="_blank" style="display:inline-flex; align-items:center; gap:8px; background:#f5f3ff; border:1px solid #ede9fe; padding:8px 16px; border-radius:20px; text-decoration:none; color:#7c3aed; font-size:0.8rem; font-weight:600;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13 2L4.5 13.5H12L11 22L19.5 10.5H12L13 2Z" fill="#7c3aed"/></svg>
+    Powered by Operon · Your AI Workforce Platform
+  </a>
+</div>
+
+</body>
+</html>
